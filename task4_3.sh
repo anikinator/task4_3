@@ -47,7 +47,7 @@ BACKUPNAME="$BACKUPDIR/$DIRTOBACKUP"
 OLDBACKUPSCOUNT=$(($2-1))
 
 ## Delete oldest backup
-if [ -f $BACKUPNAME.$2.tar.gz ]; then
+if [ -f "$BACKUPNAME.$2.tar.gz" ]; then
 
 	rm -f "$BACKUPNAME.$2.tar.gz"
 fi
