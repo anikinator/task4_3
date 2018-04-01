@@ -54,7 +54,9 @@ if [ "$2" -lt "$OLDBACKUPSCOUNT" ];then
 
 	for ((x=$OLDBACKUPSCOUNT;x>$NUMEREDBACKUPS;x--));do
 
-		rm -f "$BACKUPNAME.$x.tar.gz"
+		if [ -f "$BACKUPNAME.$x.tar.gz" ]; then
+			rm -f "$BACKUPNAME.$x.tar.gz"
+		fi
 	done
 fi
 
@@ -66,7 +68,7 @@ if [ -f "$BACKUPNAME.$NUMEREDBACKUPS.tar.gz" ]; then
 fi
 
 ## Rotate old backups
-## Line 76, 77 - fixes rotation logic if accedenatly "middle" copy(ies) was deleted.
+## Line 78, 79 - fixes rotation logic if accedenatly "middle" copy(ies) was deleted.
 ## It just creates empty file with right name, even script worked at first time.
 for ((i=$NUMEREDBACKUPS;i>=1;i--))
  do
