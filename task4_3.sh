@@ -12,7 +12,7 @@ if ! [ -d "$BACKUPDIR" ]; then
 	mkdir -p "$BACKUPDIR" 
 fi
 
-# Check parameters
+# Check parameters count
 if [ $# -ne 2 ]; then
 
 	E_ARGNUM="Error 1. Only two parameters are allowed, you've entered $#."
@@ -45,7 +45,7 @@ DIRTOBACKUP=${DIRTOBACKUP//"/"/"-"}
 # Full path to backup and backup name
 BACKUPNAME="$BACKUPDIR/$DIRTOBACKUP"
 
-OLDBACKUPSCOUNT=`ls $BACKUPDIR | grep $DIRTOBACKUP."[0-9]".tar.gz | wc -l`
+OLDBACKUPSCOUNT=`ls $BACKUPDIR | grep -Eo "$DIRTOBACKUP"."[0-9]{1,5}".tar.gz | wc -l`
 #OLDBACKUPSCOUNT=$(($OLDBACKUPSCOUNT-1))
 NUMEREDBACKUPS=$(($2-1))
 
