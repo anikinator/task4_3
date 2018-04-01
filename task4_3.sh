@@ -2,7 +2,7 @@
 
 # Simple Backup anikinator@gmail.com
 
-#uncomment to check stderr redirect
+#uncomment to check stdout > stderr redirect
 #exec 2>> errors
 
 #Make and check backup dir
@@ -23,15 +23,15 @@ fi
 ## First Parameter - Directory to backup
 if ! [ -d "$1" ]; then
 
-	E_FIRSTPARAM= "Error 2. Directory: ${1} not existed. Nothing to backup." 
+	E_FIRSTPARAM= "Error 2. Directory $1 not existed. Nothing to backup." 
 	echo $E_FIRSTPARAM 1>&2
 	exit 2
 fi
 
 ## Second Parameter - Backups count
-if ! [[ $2 =~ ^[0-9]+$ ]]; then
+if ! [[ $2 =~ ^[0-9]+$ && $2 != 0 ]]; then
 
-	E_SECONDPARAM="Error 3. Second parameter must be a number"
+	E_SECONDPARAM="Error 3. Second parameter must be a number and not zero."
 	echo $E_SECONDPARAM 1>&2
 	exit 3
 fi
@@ -42,20 +42,36 @@ DIRTOBACKUP=${1#"/"}
 DIRTOBACKUP=${DIRTOBACKUP%"/"}  
 DIRTOBACKUP=${DIRTOBACKUP//"/"/"-"}  
 
+# Full path to backup and backup name
 BACKUPNAME="$BACKUPDIR/$DIRTOBACKUP"
 
-OLDBACKUPSCOUNT=$(($2-1))
+OLDBACKUPSCOUNT=`ls $BACKUPDIR | grep $DIRTOBACKUP."[0-9]".tar.gz | wc -l`
+#OLDBACKUPSCOUNT=$(($OLDBACKUPSCOUNT-1))
+NUMEREDBACKUPS=$(($2-1))
 
-## Delete oldest backup
-if [ -f "$BACKUPNAME.$2.tar.gz" ]; then
+## If $2 backups count parameter less then backups in backup storage
+if [ "$2" -lt "$OLDBACKUPSCOUNT" ];then
 
-	rm -f "$BACKUPNAME.$2.tar.gz"
+	echo "Backount changed to $OLDBACKUPSCOUNT"
+	
+	for ((x=$OLDBACKUPSCOUNT;x>$NUMEREDBACKUPS;x--));do
+	echo "Delete $BACKUPNAME.$x.tar.gz"
+	rm -f "$BACKUPNAME.$x.tar.gz"
+		
+	done
+fi
+
+
+## Delete oldest backup $2-1
+if [ -f "$BACKUPNAME.$NUMEREDBACKUPS.tar.gz" ]; then
+
+	rm -f "$BACKUPNAME.$NUMEREDBACKUPS.tar.gz"
 fi
 
 ## Rotate old backups
 ## Line 62, 63 - fixes rotation logic if accedenatly "middle" copy(ies) was deleted.
 ## It just creates empty file with right name, even script worked at first time.
-for ((i=$OLDBACKUPSCOUNT;i>=1;i--))
+for ((i=$NUMEREDBACKUPS;i>=1;i--))
  do
 	if [ -f "$BACKUPNAME.$i.tar.gz" ]; then
 
@@ -72,5 +88,5 @@ if [ -f "$BACKUPNAME.tar.gz" ]; then
 fi
 
 ## Fresh Backup
-tar -zcf "${BACKUP}${BACKUPNAME}.tar.gz" "$1" 1>&2
+tar -zcf "${BACKUPNAME}.tar.gz" "$1" 1>&2
 
