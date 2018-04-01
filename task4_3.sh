@@ -49,15 +49,12 @@ OLDBACKUPSCOUNT=`ls $BACKUPDIR | grep $DIRTOBACKUP."[0-9]".tar.gz | wc -l`
 #OLDBACKUPSCOUNT=$(($OLDBACKUPSCOUNT-1))
 NUMEREDBACKUPS=$(($2-1))
 
-## If $2 backups count parameter less then backups in backup storage
+## If $2 backups count parameter changed and it less then backups in backup storage
 if [ "$2" -lt "$OLDBACKUPSCOUNT" ];then
 
-	echo "Backount changed to $OLDBACKUPSCOUNT"
-	
 	for ((x=$OLDBACKUPSCOUNT;x>$NUMEREDBACKUPS;x--));do
-	echo "Delete $BACKUPNAME.$x.tar.gz"
-	rm -f "$BACKUPNAME.$x.tar.gz"
-		
+
+		rm -f "$BACKUPNAME.$x.tar.gz"
 	done
 fi
 
@@ -69,7 +66,7 @@ if [ -f "$BACKUPNAME.$NUMEREDBACKUPS.tar.gz" ]; then
 fi
 
 ## Rotate old backups
-## Line 62, 63 - fixes rotation logic if accedenatly "middle" copy(ies) was deleted.
+## Line 76, 77 - fixes rotation logic if accedenatly "middle" copy(ies) was deleted.
 ## It just creates empty file with right name, even script worked at first time.
 for ((i=$NUMEREDBACKUPS;i>=1;i--))
  do
