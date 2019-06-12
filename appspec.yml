@@ -1,8 +1,8 @@
 version: 0.0
 os: linux
 files: 
-  - source: /*
-    destination: /var/www/scripts
+  - source: /
+    destination: /var/www/scripts/
 #resources: 
 #  ecs-service-specifications
 #hooks: 
